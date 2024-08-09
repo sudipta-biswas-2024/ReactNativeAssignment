@@ -1,8 +1,8 @@
 import { useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import SignUp from './SignUp';
-import Loginpage from './Loginpage';
-import Homepage from './Homepage';
+import SignUp from '../Screens/SignUp';
+import Loginpage from '../Screens/Loginpage';
+import Homepage from '../Screens/Homepage';
 import { Button } from 'react-native';
 import { Alert } from 'react-native';
 
