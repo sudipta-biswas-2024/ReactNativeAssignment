@@ -32,7 +32,7 @@ function Loginpage() {
         <View style={styles.container}>
             <StatusBar style="auto" />
             <Text style={styles.titleText}>Welcome to the Login Page</Text>
-            <View style={{ padding: 20 }}><Image source={require('./assets/applicationLogo.png')} style={{ width: 200, height: 200 }} /></View>
+            <View style={{ padding: 20 }}><Image source={require('../assets/applicationLogo.png')} style={{ width: 200, height: 200 }} /></View>
             <View style={styles.innercontainer}>
                 <View>
                     <Text style={styles.inputTitle}>Username:</Text>

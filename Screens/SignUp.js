@@ -24,7 +24,7 @@ const SignUp = () => {
         <View style={styles.container}>
             <StatusBar style="auto" />
             <Text style={styles.titleText}>Please register here</Text>
-            <View style={{ padding: 20 }}><Image source={require('./assets/applicationLogo.png')} style={{ width: 200, height: 200 }} /></View>
+            <View style={{ padding: 20 }}><Image source={require('../assets/applicationLogo.png')} style={{ width: 200, height: 200 }} /></View>
             <View style={styles.innercontainer}>
                 <View>
                     <Text style={styles.inputTitle}>Email Address:</Text>
