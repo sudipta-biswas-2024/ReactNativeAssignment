@@ -46,7 +46,6 @@ function AppNavigation() {
         );
     };
 
-
     return (
         /* if Autheticated  {
              // Logged in Stack

@@ -2,17 +2,15 @@ import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../Configure/Firebaseconfig';
+import { Alert } from 'react-native';
 
 function Loginpage() {
     const [userName, setEntereUserName] = useState('');
     const [password, setEnteredPassword] = useState('');
     const navigation = useNavigation();
 
-    function submitLogin() {
-        console.log('Username:', userName);
-        console.log('Password:', password);
-        navigation.navigate('Home');
-    };
 
     function navigateToSignUp() {
         console.log('Navigating to Sign Up Page');
@@ -27,6 +25,42 @@ function Loginpage() {
     oncancel = () => {
         console.log('App Cancelled');
     }
+
+    const handleLogin = async () => {
+        console.log('Username:', userName);
+        console.log('Password:', password);
+        if (userName && password) {
+            try {
+                await signInWithEmailAndPassword(auth, userName, password);
+                Alert.alert(
+                    'Signed In Successfully',
+                    'You have signed in successfully',
+                    [
+                        {
+                            text: 'Ok',
+                            onPress: () => navigation.navigate('Home'),
+                            style: 'default',
+                        },
+                    ],
+                );
+
+            } catch (e) {
+                Alert.alert(
+                    'Failed to Sign In',
+                    'User may not exist or password is incorrect',
+                    [
+                        {
+                            text: 'Cancel',
+                            onPress: () => console.log('Cancel Pressed'),
+                            style: 'cancel',
+                        },
+                    ],
+                );
+            }
+        } else {
+            Alert.alert('Invalid Input', 'Please enter valid username and password');
+        }
+    };
 
     return (
         <View style={styles.container}>
@@ -60,7 +94,7 @@ function Loginpage() {
                 <View style={{ margin: 20, alignItems: 'center', paddingTop: 20 }}>
                     <TouchableOpacity
                         style={styles.button}
-                        onPress={submitLogin}>
+                        onPress={handleLogin}>
                         <Text style={styles.buttonText}>Sign In</Text>
                     </TouchableOpacity>
                     <TouchableOpacity

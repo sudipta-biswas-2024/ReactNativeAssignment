@@ -2,16 +2,105 @@ import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
 import React from 'react'
+import { Alert } from 'react-native';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../Configure/Firebaseconfig';
+import { useNavigation } from '@react-navigation/native';
 
 const SignUp = () => {
     const [userName, setEntereUserName] = useState('');
     const [password, setEnteredPassword] = useState('');
+    const navigation = useNavigation();
 
-    function registerUser() {
-        console.log('Username:', userName);
-        console.log('Password:', password);
+    // Function to validate email
+    emailvalidation = (email) => {
+        var emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+        return emailPattern.test(email);
     }
 
+    function userAlreadyExists() {
+        Alert.alert(
+            'User Exists',
+            'User already exists',
+            [
+                {
+                    text: 'Go to Login', onPress:
+                        () => navigation.navigate('Login')
+                },
+            ],
+        );
+    }
+
+    function userCreatedAlert() {
+        Alert.alert(
+            'Successfully Signed Up',
+            'You have signedup successfully',
+            [
+                {
+                    text: 'Go to Login', onPress:
+                        () => navigation.navigate('Login')
+                },
+            ],
+        );
+    }
+
+    const signUpUserWithEmailAndPass = async () => {
+        if (userName == '' || password == '') {
+            Alert.alert(
+                'Invalid Input',
+                'Please enter valid username and password',
+                [
+                    {
+                        text: 'Cancel',
+                        onPress: () => console.log('Cancel Pressed'),
+                        style: 'cancel',
+                    },
+                ],
+            );
+            return;
+        } else if (!emailvalidation(userName)) {
+            Alert.alert(
+                'Invalid Email',
+                'Please enter valid email address',
+                [
+                    {
+                        text: 'Cancel',
+                        onPress: () => console.log('Cancel Pressed'),
+                        style: 'cancel',
+                    },
+                ],
+            );
+            return;
+        } else if (password.length < 6) {
+            Alert.alert(
+                'Invalid Password',
+                'Password should be atleast 6 characters',
+                [
+                    {
+                        text: 'Cancel',
+                        onPress: () => console.log('Cancel Pressed'),
+                        style: 'cancel',
+                    },
+                ],
+            );
+            return;
+        }
+
+        if (userName && password) {
+            try {
+                await createUserWithEmailAndPassword(auth, userName, password);
+                console.log('User Created');
+                userCreatedAlert();
+            } catch (e) {
+                console.error(e);
+                userAlreadyExists();
+            }
+        } else {
+            // Show Error
+        }
+    };
+
+    // Onload and oncancel functions
     onload = () => {
         console.log('App Loaded');
     }
@@ -20,6 +109,7 @@ const SignUp = () => {
         console.log('App Cancelled');
     }
 
+    // Return the UI
     return (
         <View style={styles.container}>
             <StatusBar style="auto" />
@@ -52,7 +142,7 @@ const SignUp = () => {
                 <View style={{ margin: 20, alignItems: 'center', paddingTop: 20 }}>
                     <TouchableOpacity
                         style={styles.button}
-                        onPress={registerUser}>
+                        onPress={signUpUserWithEmailAndPass}>
                         <Text style={styles.buttonText}>Sign Up</Text>
                     </TouchableOpacity>
                 </View>
@@ -60,6 +150,7 @@ const SignUp = () => {
         </View>
     );
 }
+
 
 const styles = StyleSheet.create({
     container: {
