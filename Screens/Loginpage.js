@@ -26,9 +26,67 @@ function Loginpage() {
         console.log('App Cancelled');
     }
 
+    // Function to validate email
+    emailvalidation = (email) => {
+        var emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+        return emailPattern.test(email);
+    }
+
+    const clearTextInputs = () => {
+        setEntereUserName('');
+        setEnteredPassword('');
+
+    }
+
+    const clearCredentialsAndNavigate = () => {
+        clearTextInputs();
+        navigation.navigate('Home');
+    }
+
     const handleLogin = async () => {
         console.log('Username:', userName);
         console.log('Password:', password);
+        if (userName == '' || password == '') {
+            Alert.alert(
+                'Invalid Input',
+                'Please enter valid username and password',
+                [
+                    {
+                        text: 'Cancel',
+                        onPress: () => console.log('Cancel Pressed'),
+                        style: 'cancel',
+                    },
+                ],
+            );
+            return;
+        } else if (!emailvalidation(userName)) {
+            Alert.alert(
+                'Invalid Email',
+                'Please enter valid email address',
+                [
+                    {
+                        text: 'Cancel',
+                        onPress: () => console.log('Cancel Pressed'),
+                        style: 'cancel',
+                    },
+                ],
+            );
+            return;
+        } else if (password.length < 6) {
+            Alert.alert(
+                'Invalid Password',
+                'Password should be atleast 6 characters',
+                [
+                    {
+                        text: 'Cancel',
+                        onPress: () => console.log('Cancel Pressed'),
+                        style: 'cancel',
+                    },
+                ],
+            );
+            return;
+        }
+
         if (userName && password) {
             try {
                 await signInWithEmailAndPassword(auth, userName, password);
@@ -38,12 +96,12 @@ function Loginpage() {
                     [
                         {
                             text: 'Ok',
-                            onPress: () => navigation.navigate('Home'),
+                            onPress: () => clearCredentialsAndNavigate(),
                             style: 'default',
                         },
                     ],
                 );
-
+                clearTextInputs();
             } catch (e) {
                 Alert.alert(
                     'Failed to Sign In',
