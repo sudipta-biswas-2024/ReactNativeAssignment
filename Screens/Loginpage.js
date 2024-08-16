@@ -1,16 +1,20 @@
 import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../Configure/Firebaseconfig';
 import { Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function Loginpage() {
     const [userName, setEntereUserName] = useState('');
     const [password, setEnteredPassword] = useState('');
     const navigation = useNavigation();
 
+    useEffect(() => {
+        onload();
+    }, []);
 
     function navigateToSignUp() {
         console.log('Navigating to Sign Up Page');
@@ -20,6 +24,7 @@ function Loginpage() {
 
     onload = () => {
         console.log('App Loaded');
+        retrieveUserInformation();
     }
 
     oncancel = () => {
@@ -35,6 +40,7 @@ function Loginpage() {
     const clearTextInputs = () => {
         setEntereUserName('');
         setEnteredPassword('');
+        renderView();
 
     }
 
@@ -120,50 +126,100 @@ function Loginpage() {
         }
     };
 
-    return (
-        <View style={styles.container}>
-            <StatusBar style="auto" />
-            <Text style={styles.titleText}>Welcome to the Login Page</Text>
-            <View style={{ padding: 20 }}><Image source={require('../assets/applicationLogo.png')} style={{ width: 200, height: 200 }} /></View>
-            <View style={styles.innercontainer}>
-                <View>
-                    <Text style={styles.inputTitle}>Username:</Text>
-                    <View style={styles.inputViews}>
-                        <TextInput
-                            style={styles.input}
-                            placeholder='Enter your username'
-                            placeholderTextColor={'gray'}
-                            onChangeText={(enteredText) => setEntereUserName(enteredText)}
-                        />
+    // Function to check if user is signed in
+    auth.onAuthStateChanged((user) => {
+        if (user) {
+            console.log(user.email);
+            console.log(user.uid);
+            saveUserInformation(user);
+        } else {
+            console.log('User is signed out');
+        }
+    });
+
+    // Function to save user information in local storage
+    async function saveUserInformation(user) {
+        try {
+            const userData = {
+                uid: user.uid,
+                email: user.email,
+                displayName: user.displayName,
+            };
+
+            await AsyncStorage.setItem('user', JSON.stringify(userData));
+            console.log('User information saved successfully');
+        } catch (error) {
+            console.error('Error saving user information:', error);
+        }
+    }
+
+    // Function to retrieve user information from local storage
+    async function retrieveUserInformation() {
+        try {
+            const userString = await AsyncStorage.getItem('user');
+            if (userString) {
+                const userData = JSON.parse(userString);
+                console.log('Retrieved user information:', userData);
+                if (userData.uid && userData.email) {
+                    navigation.navigate('Home');
+                }
+            } else {
+                console.log('No user information found');
+            }
+        } catch (error) {
+            console.error('Error retrieving user information:', error);
+        }
+    }
+
+    const renderView = () => {
+        return (
+            <View style={styles.container}>
+                <Text style={styles.titleText}>Welcome to the Login Page</Text>
+                <View style={{ padding: 20 }}><Image source={require('../assets/applicationLogo.png')} style={{ width: 200, height: 200 }} /></View>
+                <View style={styles.innercontainer}>
+                    <View>
+                        <Text style={styles.inputTitle}>Username:</Text>
+                        <View style={styles.inputViews}>
+                            <TextInput
+                                style={styles.input}
+                                placeholder='Enter your username'
+                                placeholderTextColor={'gray'}
+                                onChangeText={(enteredText) => setEntereUserName(enteredText)}
+                            />
+                        </View>
                     </View>
-                </View>
-                <View style={{ paddingTop: 10 }}>
-                    <Text style={styles.inputTitle}>Password:</Text>
-                    <View style={styles.inputViews}>
-                        <TextInput
-                            style={styles.input}
-                            placeholder='Enter your password'
-                            placeholderTextColor={'gray'}
-                            secureTextEntry={true}
-                            onChangeText={(enteredText) => setEnteredPassword(enteredText)}
-                        />
+                    <View style={{ paddingTop: 10 }}>
+                        <Text style={styles.inputTitle}>Password:</Text>
+                        <View style={styles.inputViews}>
+                            <TextInput
+                                style={styles.input}
+                                placeholder='Enter your password'
+                                placeholderTextColor={'gray'}
+                                secureTextEntry={true}
+                                onChangeText={(enteredText) => setEnteredPassword(enteredText)}
+                            />
+                        </View>
                     </View>
-                </View>
-                <View style={{ margin: 20, alignItems: 'center', paddingTop: 20 }}>
-                    <TouchableOpacity
-                        style={styles.button}
-                        onPress={handleLogin}>
-                        <Text style={styles.buttonText}>Sign In</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={styles.signUpButton}
-                        onPress={navigateToSignUp}>
-                        <Text style={styles.signUpButtonText}>Don't have an account? Sign Up</Text>
-                    </TouchableOpacity>
+                    <View style={{ margin: 20, alignItems: 'center', paddingTop: 20 }}>
+                        <TouchableOpacity
+                            style={styles.button}
+                            onPress={handleLogin}>
+                            <Text style={styles.buttonText}>Sign In</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.signUpButton}
+                            onPress={navigateToSignUp}>
+                            <Text style={styles.signUpButtonText}>Don't have an account? Sign Up</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </View>
-        </View>
-    );
+        );
+    }
+
+    return renderView();
+
+
 }
 
 const styles = StyleSheet.create({

@@ -5,6 +5,8 @@ import Loginpage from '../Screens/Loginpage';
 import Homepage from '../Screens/Homepage';
 import { Button } from 'react-native';
 import { Alert } from 'react-native';
+import { auth } from "../Configure/Firebaseconfig";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Stack = createNativeStackNavigator();
 function AppNavigation() {
@@ -22,11 +24,28 @@ function AppNavigation() {
                 },
                 {
                     text: 'Yes', onPress:
-                        () => navigation.navigate('Login')
+                        () => logoutFunction()
                 },
             ],
         );
     };
+
+    // Logout function
+    const logoutFunction = async () => {
+        auth.signOut();
+        console.log('Logging out');
+        removeObjectFromAsyncStorage('user');
+        navigation.navigate('Login');
+    }
+
+    async function removeObjectFromAsyncStorage(key) {
+        try {
+            await AsyncStorage.removeItem(key);
+            console.log('Object removed successfully');
+        } catch (error) {
+            console.error('Error removing object:', error);
+        }
+    }
 
     return (
         /* if Autheticated  {
