@@ -1,20 +1,33 @@
-import React from 'react'
-import { View, StyleSheet, Image, FlatList, Text } from 'react-native';
+import React, { useState, useEffect } from 'react'
+import { View, StyleSheet, Image, FlatList, Text, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+
+
 
 const Homepage = () => {
-    const data = [
-        { key: '1', name: 'Item 1' },
-        { key: '2', name: 'Item 2' },
-        { key: '3', name: 'Item 3' },
-        { key: '4', name: 'Item 4' },
-        { key: '5', name: 'Item 5' },
-        { key: '6', name: 'Item 6' },
-        { key: '7', name: 'Item 7' },
-        { key: '8', name: 'Item 8' },
-        { key: '9', name: 'Item 9' },
-        { key: '10', name: 'Item 10' },
-        // Add more items as needed
-    ];
+    const [items, setItems] = useState([]);
+    const fetch = require('node-fetch');
+    const navigation = useNavigation();
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch('https://api.restful-api.dev/objects');
+                const data = await response.json();
+
+                setItems(data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    handlePress = (item) => {
+        console.log('Pressed:', item);
+        navigation.navigate('Detail', { itemDetailObj: item });
+    }
 
     // Rest of the code
     return (
@@ -27,8 +40,8 @@ const Homepage = () => {
             </View>
             <View style={styles.flatlistContainer}>
                 <FlatList
-                    data={data}
-                    keyExtractor={item => item.key}
+                    data={items}
+                    keyExtractor={item => item.id}
                     renderItem={({ item }) =>
                         renderItemText(item)
                     }
@@ -39,11 +52,15 @@ const Homepage = () => {
 }
 
 function renderItemText(item) {
-    return (<View style={styles.renderItemTextContainer}>
-        <Text style={{ fontSize: '30px', fontWeight: 'bold' }}>
-            {item.name}
-        </Text>
-    </View>);
+    return (
+        <TouchableOpacity onPress={() => handlePress(item)}>
+            <View style={styles.renderItemTextContainer}>
+                <Text style={{ fontSize: 30, fontWeight: 'bold' }}>
+                    {item.name}
+                </Text>
+            </View>
+        </TouchableOpacity>
+    );
 }
 
 const styles = StyleSheet.create({
