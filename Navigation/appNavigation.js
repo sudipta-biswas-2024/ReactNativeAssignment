@@ -8,6 +8,7 @@ import { Button } from 'react-native';
 import { Alert } from 'react-native';
 import { auth } from "../Configure/Firebaseconfig";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import SplashScreen from "../Screens/SplashScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -37,9 +38,9 @@ function AppNavigation() {
     // Logout function
     const logoutFunction = async () => {
         auth.signOut();
-        console.log('Logging out');
         removeObjectFromAsyncStorage('user');
-        navigation.navigate('Login');
+        console.log('Logging out');
+        navigation.navigate('Login', { animation: 'none' });
     }
 
     // Function to remove object from async storage
@@ -58,9 +59,28 @@ function AppNavigation() {
          } else {
              // Non - logged in Stack
          }*/
-        <Stack.Navigator>
-            <Stack.Screen name="Login" component={Loginpage} />
-            <Stack.Screen name="SignUp" component={SignUp} />
+        <Stack.Navigator initialRouteName="Splash">
+            <Stack.Screen name="Splash"
+                component={SplashScreen}
+                options={{
+                    headerShown: false,
+                    gestureEnabled: false,
+                    headerBackVisible: false,
+                    headerShadowVisible: false,
+                }}
+            />
+            <Stack.Screen name="Login"
+                component={Loginpage}
+                options={{
+                    headerShown: false,
+                    gestureEnabled: false,
+                    headerBackVisible: false,
+                    headerShadowVisible: false,
+                }}
+            />
+            <Stack.Screen name="SignUp"
+                component={SignUp}
+            />
             <Stack.Screen
                 name="Home"
                 component={Homepage}

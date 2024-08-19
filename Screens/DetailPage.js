@@ -1,34 +1,33 @@
-import { View, Text } from 'react-native'
-import { useNavigation } from '@react-navigation/native';
-import { React, useLayoutEffect } from 'react'
+import { View, Text, StyleSheet } from 'react-native'
+import { React } from 'react'
 
 const DetailPage = ({ route }) => {
     const { itemDetailObj } = route.params;
-    const navigation = useNavigation();
 
     // Object Destructuring
-    const { data: { name, capacity, Color, price, year, generation, Description, } } = itemDetailObj;
+    const { data: { capacity, color, price, year, generation, Description, } } = itemDetailObj;
+    const { name } = itemDetailObj;
 
     console.log('Object:', itemDetailObj);
 
-    useLayoutEffect(() => {
-        navigation.setOptions({
-            title: itemDetailObj.data.name, // Assuming itemDetailObj has a title property
-        });
-    }, [navigation, itemDetailObj]);
-
-
     return (
         <View style={{ alignItems: 'center', flex: 1, justifyContent: 'center' }}>
-            <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Name : {name ? name : 'Name not available'}</Text>
-            <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Capacity : {capacity ? capacity : 'Capacity not available'}</Text>
-            <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Color : {Color ? Color : 'Color not available'}</Text>
-            <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Price : {price ? price : 'Price not available'}</Text>
-            <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Year : {year ? year : 'Year not available'}</Text>
-            <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Generation : {generation ? generation : 'Generation not available'}</Text>
-            <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Description : {Description ? Description : 'Description not available'}</Text>
+            <Text style={styles.textStyle}>Name : {name ? name : 'Name not available'}</Text>
+            <Text style={styles.textStyle}>Capacity : {capacity ? capacity : 'Capacity not available'}</Text>
+            <Text style={styles.textStyle}>Color : {color ? color : 'Color not available'}</Text>
+            <Text style={styles.textStyle}>Price : {price ? price : 'Price not available'}</Text>
+            <Text style={styles.textStyle}>Year : {year ? year : 'Year not available'}</Text>
+            <Text style={styles.textStyle}>Generation : {generation ? generation : 'Generation not available'}</Text>
+            <Text style={styles.textStyle}>Description : {Description ? Description : 'Description not available'}</Text>
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+    textStyle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+    }
+});
 
 export default DetailPage;

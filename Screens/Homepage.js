@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { View, StyleSheet, Image, FlatList, Text, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Image, FlatList, Text, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 
@@ -26,7 +26,22 @@ const Homepage = () => {
 
     handlePress = (item) => {
         console.log('Pressed:', item);
-        navigation.navigate('Detail', { itemDetailObj: item });
+        if (item.data == null) {
+            console.log('Data not available');
+            Alert.alert(
+                'No data available',
+                'All the available data is missing here',
+                [
+                    {
+                        text: 'Cancel',
+                        onPress: () => console.log('Cancel Pressed'),
+                        style: 'cancel',
+                    },
+                ],
+            );
+        } else {
+            navigation.navigate('Detail', { itemDetailObj: item });
+        }
     }
 
     // Rest of the code

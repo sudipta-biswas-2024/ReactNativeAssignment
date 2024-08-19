@@ -1,5 +1,4 @@
-import { StatusBar } from 'expo-status-bar';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { signInWithEmailAndPassword } from 'firebase/auth';
@@ -16,6 +15,7 @@ function Loginpage() {
         onload();
     }, []);
 
+
     function navigateToSignUp() {
         console.log('Navigating to Sign Up Page');
         navigation.navigate('SignUp');
@@ -24,7 +24,6 @@ function Loginpage() {
 
     onload = () => {
         console.log('App Loaded');
-        retrieveUserInformation();
     }
 
     oncancel = () => {
@@ -35,18 +34,6 @@ function Loginpage() {
     emailvalidation = (email) => {
         var emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
         return emailPattern.test(email);
-    }
-
-    const clearTextInputs = () => {
-        setEntereUserName('');
-        setEnteredPassword('');
-        renderView();
-
-    }
-
-    const clearCredentialsAndNavigate = () => {
-        clearTextInputs();
-        navigation.navigate('Home');
     }
 
     const handleLogin = async () => {
@@ -102,12 +89,12 @@ function Loginpage() {
                     [
                         {
                             text: 'Ok',
-                            onPress: () => clearCredentialsAndNavigate(),
+                            onPress: () => navigation.navigate('Home'),
                             style: 'default',
                         },
                     ],
                 );
-                clearTextInputs();
+                renderView();
             } catch (e) {
                 Alert.alert(
                     'Failed to Sign In',
@@ -134,8 +121,19 @@ function Loginpage() {
             saveUserInformation(user);
         } else {
             console.log('User is signed out');
+            removeUserFromSaved('user');
         }
     });
+
+    // Function to remove object from async storage
+    async function removeUserFromSaved(key) {
+        try {
+            await AsyncStorage.removeItem(key);
+            console.log('Object removed successfully');
+        } catch (error) {
+            console.error('Error removing object:', error);
+        }
+    }
 
     // Function to save user information in local storage
     async function saveUserInformation(user) {
@@ -150,24 +148,6 @@ function Loginpage() {
             console.log('User information saved successfully');
         } catch (error) {
             console.error('Error saving user information:', error);
-        }
-    }
-
-    // Function to retrieve user information from local storage
-    async function retrieveUserInformation() {
-        try {
-            const userString = await AsyncStorage.getItem('user');
-            if (userString) {
-                const userData = JSON.parse(userString);
-                console.log('Retrieved user information:', userData);
-                if (userData.uid && userData.email) {
-                    navigation.navigate('Home');
-                }
-            } else {
-                console.log('No user information found');
-            }
-        } catch (error) {
-            console.error('Error retrieving user information:', error);
         }
     }
 
