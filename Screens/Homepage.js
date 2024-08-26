@@ -14,7 +14,6 @@ const Homepage = () => {
             try {
                 const response = await fetch('https://api.restful-api.dev/objects');
                 const data = await response.json();
-
                 setItems(data);
             } catch (error) {
                 console.error('Error fetching data:', error);
