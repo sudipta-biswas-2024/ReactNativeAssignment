@@ -5,10 +5,13 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../Configure/Firebaseconfig';
 import { Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 function Loginpage() {
     const [userName, setEntereUserName] = useState('');
     const [password, setEnteredPassword] = useState('');
+    const [showSpinner, setShowSpinner] = useState(false);
+
     const navigation = useNavigation();
 
     useEffect(() => {
@@ -81,6 +84,7 @@ function Loginpage() {
         }
 
         if (userName && password) {
+            setShowSpinner(true);
             try {
                 await signInWithEmailAndPassword(auth, userName, password);
                 Alert.alert(
@@ -107,6 +111,7 @@ function Loginpage() {
                         },
                     ],
                 );
+                setShowSpinner(false);
             }
         } else {
             Alert.alert('Invalid Input', 'Please enter valid username and password');
@@ -149,11 +154,16 @@ function Loginpage() {
         } catch (error) {
             console.error('Error saving user information:', error);
         }
+        setShowSpinner(false);
     }
 
     const renderView = () => {
         return (
             <View style={styles.container}>
+                <Spinner visible={showSpinner}
+                    textContent={'Loading...'}
+                    textStyle={{ color: '#FFF' }}
+                />
                 <Text style={styles.titleText}>Welcome to the Login Page</Text>
                 <View style={{ padding: 20 }}><Image source={require('../assets/applicationLogo.png')} style={{ width: 200, height: 200 }} /></View>
                 <View style={styles.innercontainer}>
